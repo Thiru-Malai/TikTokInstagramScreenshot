@@ -27,6 +27,11 @@ for path_items in map(concat_root_path, list):
 
 chrome_options = Options()
 # chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-gpu')
+chrome_options.add_argument('--no-sandbox') #for linux avoid chrome not started
+chrome_options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"')
+chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
+
 url = "https://www.instagram.com/"
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options = chrome_options)
 driver.maximize_window()
@@ -52,31 +57,35 @@ def extract_audio_ids(url):
 
 with open("links.txt", "r") as f:
     for link in f.readlines():
-        driver.implicitly_wait(10)
-        driver.get(link)
-        sleep(3)
-        
-        # Close Tiktok Dialog
-        if('video' in link):
-            wait = WebDriverWait(driver,8)
-            guestBtnSele = '#loginContainer > div > div > div.css-txolmk-DivGuestModeContainer.exd0a435 > div > div'
-            try:
-                wait.until(EC.element_to_be_clickable((By.XPATH,"//*[@id='loginContainer']/div/div/div[3]/div/div"))).click()
-            except:
-                pass
-            
-        filename = link.split('/')[-1]
-        filename = link.split('/')[-1].rstrip('\n')
-        if('reel' in link):
-            driver.save_screenshot(f'./output/instagram/video/{filename}.png')
-        elif('instagram' in link):
-            sleep(12)
-            driver.save_screenshot(f'./output/instagram/profile/{filename}.png')
-        elif('video' in link):
-            filename = filename.split('?')[0]
-            driver.save_screenshot(f'./output/tiktok/video/{filename}.png')
-        elif('tiktok' in link):
-            driver.save_screenshot(f'./output/tiktok/profile/{filename}.png')
-        sleep(2)
-        driver.execute_script("window.scrollTo(0, 164)")
+        try:
+            driver.implicitly_wait(10)
+            driver.get(link)
+            sleep(4)
+            # Close Tiktok Dialog
+            if('video' in link):
+                wait = WebDriverWait(driver,8)
+                guestBtnSele = '#loginContainer > div > div > div.css-txolmk-DivGuestModeContainer.exd0a435 > div > div'
+                try:
+                    wait.until(EC.element_to_be_clickable((By.XPATH,"//*[@id='loginContainer']/div/div/div[3]/div/div"))).click()
+                except:
+                    pass
+                
+            filename = link.split('/')[-1]
+            filename = link.split('/')[-1].rstrip('\n')
+            if('reel' in link):
+                driver.save_screenshot(f'./output/instagram/video/{filename}.png')
+            elif('instagram' in link):
+                sleep(12)
+                driver.save_screenshot(f'./output/instagram/profile/{filename}.png')
+            elif('video' in link):
+                filename = filename.split('?')[0]
+                driver.save_screenshot(f'./output/tiktok/video/{filename}.png')
+            elif('tiktok' in link):
+                driver.save_screenshot(f'./output/tiktok/profile/{filename}.png')
+            sleep(2)
+            driver.execute_script("window.scrollTo(0, 164)")
+        except Exception as e:
+            print(e)
+            pass
+    driver.close()
             
