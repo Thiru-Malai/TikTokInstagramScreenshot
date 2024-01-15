@@ -54,20 +54,17 @@ with open("links.txt", "r") as f:
     for link in f.readlines():
         driver.implicitly_wait(10)
         driver.get(link)
-        sleep(2)
+        sleep(3)
+        
+        # Close Tiktok Dialog
         if('video' in link):
             wait = WebDriverWait(driver,8)
-            
             guestBtnSele = '#loginContainer > div > div > div.css-txolmk-DivGuestModeContainer.exd0a435 > div > div'
-            # driver
             try:
                 wait.until(EC.element_to_be_clickable((By.XPATH,"//*[@id='loginContainer']/div/div/div[3]/div/div"))).click()
             except:
                 pass
-            # driver.find_element(By.CSS_SELECTOR, guestBtnSele).click()
-            # WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.CSS_SELECTOR,guestBtnSele))).click()
-            # WebDriverWait(driver=10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, guestBtnSele)))
-
+            
         filename = link.split('/')[-1]
         filename = link.split('/')[-1].rstrip('\n')
         if('reel' in link):
